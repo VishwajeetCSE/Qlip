@@ -36,77 +36,8 @@
         </header>
 
         <main class="reels" id="reels-container">
-            <div class="reel">
-                <div class="video-wrapper">
-                    <video class="video-player"
-                        src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4" loop muted
-                        playsinline></video>
-                    <div class="mute-indicator"><i class="fas fa-volume-mute"></i></div>
-                    <div class="seek-overlay seek-left">« -5s</div>
-                    <div class="seek-overlay seek-right">+5s »</div>
-                </div>
-
-                <div class="overlay-gradient"></div>
-
-                <div class="reel-details">
-                    <div class="user-info">
-                        <div class="avatar-circle"><i class="fas fa-user"></i></div>
-                        <strong>@NeonGirl</strong>
-                        <button class="glass-btn-small" onclick="checkLogin()">Follow</button>
-                    </div>
-                    <p class="description">Tap to mute, Hold to pause! 🎵 #neon</p>
-                </div>
-
-                <div class="reel-actions">
-                    <div class="action-btn" onclick="handleLike(this)">
-                        <i class="fas fa-heart glass-icon"></i>
-                        <span class="count">12k</span>
-                    </div>
-                    <div class="action-btn" onclick="openComments()">
-                        <i class="fas fa-comment-dots glass-icon"></i>
-                        <span class="count">450</span>
-                    </div>
-                    <div class="action-btn">
-                        <i class="fas fa-share glass-icon"></i>
-                        <span>Share</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="reel">
-                <div class="video-wrapper">
-                    <video class="video-player"
-                        src="https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4"
-                        loop muted playsinline></video>
-                    <div class="mute-indicator"><i class="fas fa-volume-mute"></i></div>
-                    <div class="seek-overlay seek-left">« -5s</div>
-                    <div class="seek-overlay seek-right">+5s »</div>
-                </div>
-                <div class="overlay-gradient"></div>
-
-                <div class="reel-details">
-                    <div class="user-info">
-                        <div class="avatar-circle" style="background:orange"><i class="fas fa-user"></i></div>
-                        <strong>@Nature</strong>
-                        <button class="glass-btn-small" onclick="checkLogin()">Follow</button>
-                    </div>
-                    <p class="description">Swipe L/R to seek! 🌼 #nature</p>
-                </div>
-
-                <div class="reel-actions">
-                    <div class="action-btn" onclick="handleLike(this)">
-                        <i class="fas fa-heart glass-icon"></i>
-                        <span class="count">5k</span>
-                    </div>
-                    <div class="action-btn" onclick="openComments()">
-                        <i class="fas fa-comment-dots glass-icon"></i>
-                        <span class="count">120</span>
-                    </div>
-                    <div class="action-btn">
-                        <i class="fas fa-share glass-icon"></i>
-                        <span>Share</span>
-                    </div>
-                </div>
+            <div class="loading-state" style="text-align:center; padding-top:50vh; color:white;">
+                <i class="fas fa-spinner fa-spin"></i> Loading Qlips...
             </div>
         </main>
 

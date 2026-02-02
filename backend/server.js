@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path"); // Required for file paths
+const path = require("path");
 
 const app = express();
 const PORT = 3000;
@@ -11,12 +11,11 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// === CRITICAL CHANGE: Serving Frontend from Sibling Folder ===
-// This tells the server: "Go up one level (..), then into 'frontend'"
+// Serving Frontend from Sibling Folder
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Database Connection (Local)
-const MONGO_URI = "mongodb://127.0.0.1:27017/qlipDB";
+// Database Connection
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO_URI)
@@ -44,28 +43,29 @@ app.get("/api/videos", async (req, res) => {
   }
 });
 
-// Seed Route (Test Data)
+// === RESET & SEED ROUTE (Now using your local video) ===
 app.get("/seed", async (req, res) => {
-  const count = await Video.countDocuments();
-  if (count > 0) return res.send("Data already exists.");
+  try {
+    // 1. Delete all existing videos
+    await Video.deleteMany({});
 
-  await Video.insertMany([
-    {
-      url: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4",
-      category: "Tech",
-      user: "NeonGirl",
-      description: "Cyberpunk vibes! 🤖 #tech",
-      likes: 120,
-    },
-    {
-      url: "https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4",
-      category: "Nature",
-      user: "NatureLover",
-      description: "Peaceful 🌼",
-      likes: 850,
-    },
-  ]);
-  res.send("✅ Dummy Videos Added!");
+    // 2. Add your personal video
+    const dummyVideos = [
+      {
+        url: "/videos/myvideo.mp4", // Path to your file in Qlip/frontend/videos/
+        category: "My Clips",
+        user: "Vishwajeet",
+        description: "Testing my own video in Qlip! 🎥",
+        likes: 10,
+        comments: 5,
+      },
+    ];
+
+    await Video.insertMany(dummyVideos);
+    res.send("✅ Database Cleared & Your Local Video Added!");
+  } catch (err) {
+    res.status(500).send("Error seeding data: " + err.message);
+  }
 });
 
 // Start Server
