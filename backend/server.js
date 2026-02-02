@@ -1,74 +1,61 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const path = require("path");
+const cors = require("cors");
 
 const app = express();
-const PORT = 3000;
-
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Serving Frontend from Sibling Folder
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Database Connection
-const MONGO_URI = process.env.MONGO_URI;
-
 mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ DB Error:", err));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ DB Connected"));
 
-// Video Schema
-const VideoSchema = new mongoose.Schema({
-  url: String,
-  category: String,
-  user: String,
-  description: String,
-  likes: { type: Number, default: 0 },
-  comments: { type: Number, default: 0 },
+// USER MODEL
+const User = mongoose.model(
+  "User",
+  new mongoose.Schema({
+    username: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
+  }),
+);
+
+// VIDEO MODEL
+const Video = mongoose.model(
+  "Video",
+  new mongoose.Schema({
+    url: String,
+    user: String,
+    description: String,
+  }),
+);
+
+// AUTH ROUTES
+app.post("/api/signup", async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.json({ success: true });
+  } catch (e) {
+    res.status(400).json({ error: "User exists" });
+  }
 });
-const Video = mongoose.model("Video", VideoSchema);
 
-// API Routes
+app.post("/api/login", async (req, res) => {
+  const user = await User.findOne(req.body);
+  if (user) res.json({ success: true, username: user.username });
+  else res.status(401).json({ error: "Wrong credentials" });
+});
+
+// GET VIDEOS
 app.get("/api/videos", async (req, res) => {
-  try {
-    const videos = await Video.find();
-    res.json(videos);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json(await Video.find());
 });
 
-// === RESET & SEED ROUTE (Now using your local video) ===
-app.get("/seed", async (req, res) => {
-  try {
-    // 1. Delete all existing videos
-    await Video.deleteMany({});
-
-    // 2. Add your personal video
-    const dummyVideos = [
-      {
-        url: "/videos/myvideo.mp4", // Path to your file in Qlip/frontend/videos/
-        category: "My Clips",
-        user: "Vishwajeet",
-        description: "Testing my own video in Qlip! 🎥",
-        likes: 10,
-        comments: 5,
-      },
-    ];
-
-    await Video.insertMany(dummyVideos);
-    res.send("✅ Database Cleared & Your Local Video Added!");
-  } catch (err) {
-    res.status(500).send("Error seeding data: " + err.message);
-  }
-});
-
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+// Replace your old app.listen with this:
+const PORT = process.env.PORT || 3000; 
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${PORT}`);
 });

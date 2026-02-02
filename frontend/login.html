@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Qlip - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body
+    style="background:#000; color:white; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif;">
+    <div style="background:#111; padding:40px; border-radius:15px; width:300px; text-align:center;">
+        <h2 id="title">Login to Qlip</h2>
+        <input type="text" id="user" placeholder="Username" style="width:90%; padding:10px; margin:10px 0;">
+        <input type="password" id="pass" placeholder="Password" style="width:90%; padding:10px; margin:10px 0;">
+        <button onclick="handleAuth()" id="btn"
+            style="width:100%; padding:12px; background:#ff3b5c; color:white; border:none; border-radius:5px; cursor:pointer;">Login</button>
+        <p onclick="toggle()" style="font-size:12px; margin-top:15px; cursor:pointer; color:#888;">Switch to Signup</p>
+    </div>
+
+    <script>
+        let isLogin = true;
+        function toggle() {
+            isLogin = !isLogin;
+            document.getElementById('title').innerText = isLogin ? "Login" : "Sign Up";
+            document.getElementById('btn').innerText = isLogin ? "Login" : "Sign Up";
+        }
+
+        async function handleAuth() {
+            const username = document.getElementById('user').value;
+            const password = document.getElementById('pass').value;
+            const route = isLogin ? '/api/login' : '/api/signup';
+
+            const res = await fetch(route, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                if (isLogin) {
+                    localStorage.setItem('user', data.username);
+                    const back = sessionStorage.getItem('redirectAfterLogin') || '/';
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    window.location.href = back;
+                } else {
+                    alert("Success! Now Login.");
+                    toggle();
+                }
+            } else { alert(data.error); }
+        }
+    </script>
+</body>
+
+</html>
