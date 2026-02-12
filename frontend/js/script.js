@@ -1,106 +1,134 @@
-// --- 1. GLOBAL OBSERVER: Stops videos from playing at the same time ---
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      const video = entry.target;
-      if (entry.isIntersecting) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-        video.currentTime = 0;
-      }
-    });
-  },
-  { threshold: 0.8 },
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const path = require("path");
+const cors = require("cors");
+
+const app = express();
+
+// ================= MIDDLEWARE =================
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+// ================= DATABASE =================
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(async () => {
+    console.log("✅ DB Connected");
+
+    // Insert demo videos if empty
+    const count = await Video.countDocuments();
+    if (count === 0) {
+      console.log("🎬 Inserting demo videos...");
+      await Video.insertMany(demoVideos);
+      console.log("✅ Demo videos added");
+    }
+  })
+  .catch((err) => console.error("❌ DB Error:", err));
+
+// ================= MODELS =================
+const User = mongoose.model(
+  "User",
+  new mongoose.Schema({
+    username: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
+  }),
 );
 
-// --- 2. AUTH CHECK: Redirects guests if they try to interact ---
-function checkAuth(actionName) {
-  const user = localStorage.getItem("user");
-  if (!user) {
-    sessionStorage.setItem("redirectAfterLogin", window.location.href);
-    alert(`Please login to ${actionName}!`);
-    window.location.href = "/login.html";
-    return false;
-  }
-  return true;
-}
+const Video = mongoose.model(
+  "Video",
+  new mongoose.Schema({
+    url: String,
+    user: String,
+    description: String,
+  }),
+);
 
-// --- 3. GESTURES: Double-tap to like, Single-tap to mute ---
-function setupGestures(reel, video) {
-  let lastTap = 0;
-  const heart = reel.querySelector(".heart-animation");
+// ================= DEMO VIDEOS (HTTPS SAFE) =================
+const demoVideos = [
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    user: "BunnyHop",
+    description: "Big Buck Bunny 🐰 #funny",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    user: "Dreamer",
+    description: "Elephant Dream 🎥 #creative",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    user: "FireMaster",
+    description: "Blazing Demo 🔥 #tech",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    user: "FunZone",
+    description: "More Fun 😎 #trending",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+    user: "JoyRide",
+    description: "Joy Ride 🚗 #travel",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    user: "MeltDown",
+    description: "Meltdown 💥 #viral",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+    user: "Sintel",
+    description: "Epic Animation ⚔️ #movie",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+    user: "CarGuru",
+    description: "Car Test Drive 🚙 #auto",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+    user: "SteelHero",
+    description: "Tears of Steel 🤖 #sci-fi",
+  },
+  {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+    user: "AutoReview",
+    description: "GTI Review 🚘 #review",
+  },
+];
 
-  reel.addEventListener("click", () => {
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      // Double Tap Action
-      if (checkAuth("like videos")) {
-        heart.classList.add("animate");
-        setTimeout(() => heart.classList.remove("animate"), 800);
-        console.log("Liked by:", localStorage.getItem("user"));
-      }
-    } else {
-      // Single Tap Action
-      video.muted = !video.muted;
-      const overlay = reel.querySelector(".volume-overlay");
-      if (overlay) {
-        overlay.querySelector("i").className = video.muted
-          ? "fas fa-volume-mute"
-          : "fas fa-volume-up";
-        overlay.classList.add("show");
-        setTimeout(() => overlay.classList.remove("show"), 1000);
-      }
-    }
-    lastTap = now;
-  });
-}
-
-// --- 4. LOAD VIDEOS: Fetches from your Port 3000 Backend ---
-async function loadVideos() {
-  const container = document.getElementById("reels-container");
+// ================= ROUTES =================
+app.post("/api/signup", async (req, res) => {
   try {
-    const res = await fetch("/api/videos");
-    const videos = await res.json();
-    container.innerHTML = "";
-
-    videos.forEach((video) => {
-      const reel = document.createElement("div");
-      reel.className = "reel";
-      reel.innerHTML = `
-                <div class="video-wrapper">
-                    <video class="video-player" src="${video.url}" loop muted playsinline></video>
-                    <div class="volume-overlay"><i class="fas fa-volume-up"></i></div>
-                    <div class="heart-animation"><i class="fas fa-heart"></i></div>
-                </div>
-                <div class="reel-details">
-                    <strong>@${video.user}</strong>
-                    <p>${video.description}</p>
-                </div>`;
-
-      const videoEl = reel.querySelector("video");
-      container.appendChild(reel);
-      setupGestures(reel.querySelector(".video-wrapper"), videoEl);
-      observer.observe(videoEl);
-    });
-    updateUI();
-  } catch (err) {
-    console.error("Load Error:", err);
+    const user = new User(req.body);
+    await user.save();
+    res.json({ success: true });
+  } catch {
+    res.status(400).json({ error: "User already exists" });
   }
-}
+});
 
-// --- 5. UI UPDATE: Handles Logout ---
-function updateUI() {
-  const user = localStorage.getItem("user");
-  const userIcon = document.querySelector(".fa-user");
-  if (user && userIcon) {
-    userIcon.parentElement.onclick = () => {
-      if (confirm(`Logout from ${user}?`)) {
-        localStorage.removeItem("user");
-        location.reload();
-      }
-    };
-  }
-}
+app.post("/api/login", async (req, res) => {
+  const user = await User.findOne(req.body);
+  if (user) res.json({ success: true, username: user.username });
+  else res.status(401).json({ error: "Wrong credentials" });
+});
 
-window.onload = loadVideos;
+app.get("/api/videos", async (req, res) => {
+  const videos = await Video.find();
+  res.json(videos);
+});
+
+// ================= FRONTEND FALLBACK =================
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
+
+// ================= SERVER =================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
