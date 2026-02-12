@@ -6,20 +6,20 @@ const cors = require("cors");
 
 const app = express();
 
-// -------------------- MIDDLEWARE --------------------
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// -------------------- DATABASE --------------------
+// ================= DATABASE =================
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ DB Connected"))
-  .catch((err) => console.error("❌ DB Error:", err));
+  .catch((err) => console.error("❌ DB Connection Error:", err));
 
-// -------------------- MODELS --------------------
+// ================= MODELS =================
 const User = mongoose.model(
   "User",
   new mongoose.Schema({
@@ -37,7 +37,7 @@ const Video = mongoose.model(
   }),
 );
 
-// -------------------- AUTH ROUTES --------------------
+// ================= AUTH ROUTES =================
 app.post("/api/signup", async (req, res) => {
   try {
     const user = new User(req.body);
@@ -57,19 +57,19 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// -------------------- VIDEO ROUTES --------------------
+// ================= VIDEO ROUTES =================
 app.get("/api/videos", async (req, res) => {
   const videos = await Video.find();
   res.json(videos);
 });
 
-// -------------------- FRONTEND FALLBACK --------------------
-// VERY IMPORTANT FOR RENDER
-app.get("*", (req, res) => {
+// ================= FRONTEND FALLBACK =================
+// Express 5 safe fallback (NO "*" error)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-// -------------------- SERVER --------------------
+// ================= SERVER =================
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
