@@ -1,0 +1,59 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  color: white;
+}
+
+.post {
+  width: 90%;
+  margin: 10px 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.post:hover {
+  transform: scale(1.02);
+}
+
+.button {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 600px) {
+  .post {
+    width: 100%;
+  }
+}
+
+/* Dark Theme */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Add additional styles for components */
