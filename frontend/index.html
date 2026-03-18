@@ -5,22 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Qlip - Advanced</title>
-    <link rel="stylesheet" href="/css/style.css">
-    
+
+    <!-- Local styles now resolve under frontend/css/ -->
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
-
     <div class="app-container">
-
         <header class="top-bar">
             <div class="logo-wrapper">
                 <div class="logo-container" onclick="toggleModeMenu()">
                     <span class="logo">Qlip</span>
                     <span id="current-mode" class="mode-badge">Random <i class="fas fa-caret-down"></i></span>
                 </div>
-        
+
                 <div id="mode-menu" class="mode-dropdown">
                     <div class="mode-item" onclick="selectMode('Random')"><i class="fas fa-random"></i> Random</div>
                     <div class="mode-item" onclick="selectMode('Study')"><i class="fas fa-book"></i> Study</div>
@@ -28,7 +27,7 @@
                     <div class="mode-item" onclick="selectMode('Tech')"><i class="fas fa-laptop-code"></i> Tech</div>
                 </div>
             </div>
-        
+
             <div class="category-slider">
                 <button class="glass-pill active">All</button>
                 <button class="glass-pill">Trending</button>
@@ -98,10 +97,9 @@
                 <button class="close-login" onclick="closeLogin()">Close</button>
             </div>
         </div>
-
     </div>
-    <script src="/js/script.js"></script>
-    
-</body>
 
+    <!-- Client-only JS -->
+    <script src="./js/app.js" defer></script>
+</body>
 </html>
