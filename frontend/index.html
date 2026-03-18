@@ -4,103 +4,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Qlip - Advanced</title>
-
-    <!-- Local styles now resolve under frontend/css/ -->
-    <link rel="stylesheet" href="./css/style.css">
+    <title>QlipPro - Advanced Clone</title>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
-    <div class="app-container">
-        <header class="top-bar">
-            <div class="logo-wrapper">
-                <div class="logo-container" onclick="toggleModeMenu()">
-                    <span class="logo">Qlip</span>
-                    <span id="current-mode" class="mode-badge">Random <i class="fas fa-caret-down"></i></span>
+    <div class="pro-phone-shell">
+        <div class="app-container">
+            <header class="top-bar">
+                <div class="logo-wrapper">
+                    <div class="logo-container" onclick="toggleModeMenu()">
+                        <span class="logo">QlipPro</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div id="mode-menu" class="mode-dropdown">
+                        <div class="mode-item" onclick="selectMode('Random')">Random</div>
+                        <div class="mode-item" onclick="selectMode('Study')">Study</div>
+                        <div class="mode-item" onclick="selectMode('Tech')">Tech</div>
+                    </div>
                 </div>
-
-                <div id="mode-menu" class="mode-dropdown">
-                    <div class="mode-item" onclick="selectMode('Random')"><i class="fas fa-random"></i> Random</div>
-                    <div class="mode-item" onclick="selectMode('Study')"><i class="fas fa-book"></i> Study</div>
-                    <div class="mode-item" onclick="selectMode('Funny')"><i class="fas fa-laugh"></i> Funny</div>
-                    <div class="mode-item" onclick="selectMode('Tech')"><i class="fas fa-laptop-code"></i> Tech</div>
+                <div class="header-icons">
+                    <i class="far fa-heart"></i>
+                    <i class="fab fa-facebook-messenger"></i>
                 </div>
-            </div>
+            </header>
 
-            <div class="category-slider">
-                <button class="glass-pill active">All</button>
-                <button class="glass-pill">Trending</button>
-                <button class="glass-pill">Live</button>
-            </div>
-        </header>
-
-        <main class="reels" id="reels-container">
-            <div class="loading-state" style="text-align:center; padding-top:50vh; color:white;">
-                <i class="fas fa-spinner fa-spin"></i> Loading Qlips...
-            </div>
-        </main>
-
-        <nav class="bottom-bar">
-            <i class="fas fa-home active"></i>
-            <i class="fas fa-search" onclick="toggleSearch()"></i>
-            <div class="upload-btn-wrapper" onclick="checkLogin()">
-                <i class="fas fa-plus"></i>
-            </div>
-            <i class="fas fa-bolt"></i>
-            <i class="fas fa-user" onclick="checkLogin()"></i>
-        </nav>
-
-        <div id="search-modal" class="full-screen-modal" style="background: rgba(0,0,0,0.9);">
-            <div class="search-container">
-                <div class="search-header">
-                    <input type="text" placeholder="Search users, tags..." id="search-input">
-                    <span onclick="toggleSearch()">Cancel</span>
+            <div class="story-bar">
+                <div class="story">
+                    <div class="circle yours"><i class="fas fa-plus"></i></div><span>You</span>
                 </div>
-                <div class="search-results">
-                    <p style="color:#888; text-align:center; margin-top:20px;">Try searching "Tech" or "Funny"</p>
+                <div class="story">
+                    <div class="circle"></div><span>User1</span>
+                </div>
+                <div class="story">
+                    <div class="circle"></div><span>User2</span>
                 </div>
             </div>
-        </div>
 
-        <div id="comment-modal" class="modal-sheet">
-            <div class="modal-header">
-                <span>Comments</span>
-                <i class="fas fa-times" onclick="closeComments()"></i>
-            </div>
-            <div class="comments-list" id="comments-list">
-                <div class="comment-item"><strong>@user1</strong> <span>Cool video! 🔥</span></div>
-            </div>
-            <div class="comment-input-area">
-                <input type="text" id="comment-input" placeholder="Add a comment...">
-                <button onclick="postComment()">Post</button>
-            </div>
-        </div>
+            <main class="reels-feed" id="reels-container">
+                <div class="loading">Loading Qlips...</div>
+            </main>
 
-        <div id="login-modal" class="full-screen-modal">
-            <div class="login-box">
-                <h2>Welcome Back</h2>
-                <p style="margin-bottom:20px; color:#aaa;">Log in to continue</p>
-
-                <button class="google-btn" onclick="loginWithGoogle()">
-                    <i class="fab fa-google"></i> Continue with Google
-                </button>
-
-                <div class="divider"><span>OR</span></div>
-
-                <form id="login-form" onsubmit="performLogin(event)">
-                    <input type="email" placeholder="Email" required>
-                    <input type="password" placeholder="Password" required>
-                    <button type="submit" class="glass-btn-large">Log In</button>
-                </form>
-
-                <button class="close-login" onclick="closeLogin()">Close</button>
-            </div>
+            <nav class="bottom-bar">
+                <i class="fas fa-home active"></i>
+                <i class="fas fa-search"></i>
+                <div class="upload-btn"><i class="fas fa-plus"></i></div>
+                <i class="fas fa-clapperboard"></i>
+                <div class="nav-profile"></div>
+            </nav>
         </div>
     </div>
 
-    <!-- Client-only JS (we'll create frontend/js/app.js next) -->
-    <script src="./js/app.js" defer></script>
+    <script src="js/app.js" defer></script>
 </body>
 
 </html>
