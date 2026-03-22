@@ -45,26 +45,40 @@ const demoVideos = [
 ];
 
 // ---------- 3. DATABASE CONNECTION ----------
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log("✅ DB Connected");
-    const count = await Video.countDocuments(); // Now 'Video' is defined!
-    if (count === 0) {
-      await Video.insertMany(demoVideos);
-      console.log("✅ Demo videos added");
-    }
-  })
-  .catch((err) => console.error("❌ DB Error:", err));
+const mongoUri = process.env.MONGO_URI;
+
+if (mongoUri) {
+  mongoose
+    .connect(mongoUri)
+    .then(async () => {
+      console.log("✅ DB Connected");
+      const count = await Video.countDocuments();
+      if (count === 0) {
+        await Video.insertMany(demoVideos);
+        console.log("✅ Demo videos added");
+      }
+    })
+    .catch((err) => console.error("❌ DB Error:", err));
+} else {
+  console.warn("⚠️ MONGO_URI not set; serving demo videos only.");
+}
 
 // ---------- 4. ROUTES ----------
 app.get("/api/videos", async (req, res) => {
-  const videos = await Video.find();
-  res.json(videos);
+  try {
+    if (!mongoUri || mongoose.connection.readyState !== 1) {
+      return res.json(demoVideos);
+    }
+    const videos = await Video.find();
+    res.json(videos);
+  } catch (err) {
+    console.error("❌ Error fetching videos:", err);
+    res.json(demoVideos);
+  }
 });
 
-// Fallback to index.html
-app.get("*", (req, res) => {
+// Fallback to index.html - use safe catch-all route
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
